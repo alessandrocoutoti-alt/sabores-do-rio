@@ -26,14 +26,14 @@
         <button id="escuro" class="tema" type="button" aria-pressed="false">Modo escuro</button>
         <button id="tema" class="tema" type="button" aria-pressed="false">Alto contraste</button>
       </div>
-      <p class="sub">Peça falando. Toque no microfone e diga, por exemplo, “quero duas moquecas”.</p>
+      <p class="sub">Monte seu pedido pelo cardápio, digitando ou falando. Exemplo: “quero duas moquecas”.</p>
     </div>
     <section class="voz" aria-label="Pedido por voz">
       <div class="voz-linha">
         <button type="button" id="mic" aria-label="Ativar microfone">🎤</button>
         <div>
-          <div id="fala" aria-live="polite">Toque no microfone para falar</div>
-          <div id="retorno" aria-live="polite"></div>
+          <div id="fala" aria-live="polite" aria-atomic="true">Toque no microfone para falar</div>
+          <div id="retorno" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
       </div>
       <div class="exemplos" role="group" aria-label="Comandos de exemplo">
@@ -47,9 +47,10 @@
       </div>
       <form class="digitar" id="formTexto">
         <label class="sr" for="txt">Digitar comando</label>
-        <input type="text" id="txt" placeholder="Ou digite um comando…" autocomplete="off">
+        <input type="text" id="txt" placeholder="Ou digite um comando…" autocomplete="off" aria-describedby="ajudaComando">
         <button type="submit">Enviar</button>
       </form>
+      <p class="ajuda-comando" id="ajudaComando">Comandos podem adicionar pratos, filtrar alérgenos, informar mesa ou consultar o total.</p>
       <label class="opt"><input type="checkbox" id="falar" checked> Responder em voz alta</label>
     </section>
   </div>
@@ -59,7 +60,7 @@
 <div class="layout" id="conteudo" tabindex="-1">
   <div>
     <section class="ferramentas" aria-label="Filtros e busca">
-    <div class="filtros" role="group" aria-label="Filtrar por alérgeno">
+    <div class="filtros" role="group" aria-label="Ocultar pratos que contêm estes alérgenos">
       <strong>Tenho alergia a:</strong>
       <button type="button" class="chip" data-al="gluten" aria-pressed="false">Glúten</button>
       <button type="button" class="chip" data-al="lactose" aria-pressed="false">Lactose</button>
@@ -271,7 +272,7 @@
     <p class="vazio" id="vazioPedido">Nenhum item ainda. Diga o que você quer ou toque em “Adicionar”.</p>
     <div class="campos">
       <label for="mesa">Número da mesa</label>
-      <input type="text" id="mesa" inputmode="numeric" maxlength="3" placeholder="Ex.: 5">
+      <input type="text" id="mesa" inputmode="numeric" maxlength="3" placeholder="Ex.: 5" autocomplete="off">
       <label for="obs">Observação</label>
       <textarea id="obs" rows="2" placeholder="Ex.: sem cebola"></textarea>
     </div>
@@ -284,7 +285,7 @@
 <button type="button" id="barra" aria-controls="pedido"><span id="barraQtd">Ver pedido · 0 itens</span><span id="barraTotal">R$ 0,00</span></button>
 
 <dialog id="ok">
-  <h2>Pedido enviado! ✅</h2>
+  <h2>Resumo do pedido ✅</h2>
   <p id="okNum"></p>
   <ul id="okLista"></ul>
   <button type="button" class="btn" id="okFechar">Fechar</button>

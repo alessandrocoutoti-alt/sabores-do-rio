@@ -47,14 +47,15 @@ $('#limpar').onclick = limparPedido;
 function limparPedido() { carrinho.clear(); desenhar(); dizer('Pedido limpo.'); }
 function finalizar() {
   if (!carrinho.size) return dizer('Seu pedido está vazio.');
+  // Este projeto é uma demonstração local: não há integração com uma cozinha.
   const num = Math.floor(100 + Math.random() * 900);
   const mesa = $('#mesa').value.trim(), obs = $('#obs').value.trim();
-  $('#okNum').textContent = `Pedido nº ${num}${mesa ? ' · Mesa ' + mesa : ''} enviado para a cozinha. Total: ${$('#total').textContent}`;
-  $('#okLista').innerHTML = [...carrinho].map(([id, q]) => `<li>${q}× ${porId[id].nome}</li>`).join('')
-    + (obs ? `<li><i>Obs.: ${obs.replace(/</g, '&lt;')}</i></li>` : '');
+  $('#okNum').textContent = `Resumo nº ${num}${mesa ? ' · Mesa ' + mesa : ''}. Total: ${$('#total').textContent}. Este pedido é apenas uma demonstração e não foi enviado ao restaurante.`;
+  $('#okLista').replaceChildren();
+  [...carrinho].forEach(([id, q]) => { const li = document.createElement('li'); li.textContent = `${q}× ${porId[id].nome}`; $('#okLista').append(li); });
+  if (obs) { const li = document.createElement('li'); const em = document.createElement('i'); em.textContent = `Obs.: ${obs}`; li.append(em); $('#okLista').append(li); }
   $('#ok').showModal(); $('#pedido').classList.remove('aberto');
-  dizer(`Pedido ${num} enviado para a cozinha.`);
-  carrinho.clear(); $('#obs').value = ''; desenhar();
+  dizer(`Resumo ${num} gerado. Este pedido é apenas uma demonstração.`);
 }
 $('#finalizar').onclick = finalizar;
 $('#okFechar').onclick = () => $('#ok').close();
@@ -64,7 +65,7 @@ $('#fechar').onclick = () => $('#pedido').classList.remove('aberto');
 /* ---------- Filtros de alérgenos ---------- */
 let termo = '';
 function aplicarFiltros() {
-  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', excluidos.has(c.dataset.al)));
+  document.querySelectorAll('.chip[data-al]').forEach(c => c.setAttribute('aria-pressed', excluidos.has(c.dataset.al)));
   let visiveis = 0;
   pratos.forEach(p => { const oculta = p.alergenos.some(a => excluidos.has(a)) || (termo && !semAcento(p.el.textContent).includes(termo)); p.el.hidden = oculta; if (!oculta) visiveis++; });
   document.querySelectorAll('.secao').forEach(s => s.hidden = !s.querySelector('.prato:not([hidden])'));
@@ -122,7 +123,7 @@ function comando(texto) {
     mudar(prato.id, -Math.min(qtd, carrinho.get(prato.id)));
     return dizer(`Removi ${prato.nome}.`);
   }
-  if (prato) {
+  if (prato && /\b(adicionar|adiciona|quero|pedir|pedindo|incluir|inclui)\b/.test(t)) {
     if (prato.alergenos.some(a => excluidos.has(a))) return dizer(`Atenção: ${prato.nome} contém um alérgeno que você marcou. Não adicionei.`);
     mudar(prato.id, qtd);
     const alerta = prato.alergenos.length ? ` Contém ${prato.alergenos.join(', ')}.` : '';
@@ -130,6 +131,7 @@ function comando(texto) {
   }
   const sem = [...t.matchAll(/sem (gluten|lactose|ovo|peixe|castanhas?|amendoim|crustaceos?)/g)].map(x => normAl(x[1]));
   if (sem.length) { sem.forEach(a => excluidos.add(a)); aplicarFiltros(); return dizer(`Escondi os pratos com ${sem.join(' e ')}.`); }
+  if (prato) return dizer(`Encontrei ${prato.nome}. Para incluir no pedido, diga “adicionar ${prato.nome}”.`);
   dizer('Não entendi. Tente “quero duas moquecas” ou “sem glúten”.');
 }
 
@@ -148,7 +150,7 @@ if (!SR) {
     let txt = ''; for (const r of e.results) { txt += r[0].transcript; if (r.isFinal) final = txt; }
     $('#fala').textContent = `“${txt}”`;
   };
-  rec.onerror = e => { $('#fala').textContent = e.error === 'not-allowed' ? 'Permita o uso do microfone no navegador.' : 'Não consegui ouvir. Tente de novo.'; };
+  rec.onerror = e => { $('#fala').textContent = e.error === 'not-allowed' ? 'Permita o uso do microfone no navegador.' : 'Não consegui ouvir. Tente de novo.'; $('#retorno').textContent = 'Se preferir, digite seu comando no campo abaixo.'; };
   rec.onend = () => { mic.classList.remove('ouvindo'); if (final) comando(final); };
 }
 $('#formTexto').addEventListener('submit', e => { e.preventDefault(); const v = $('#txt').value.trim(); if (v) { comando(v); $('#txt').value = ''; } });
