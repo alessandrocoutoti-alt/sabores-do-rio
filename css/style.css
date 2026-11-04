@@ -4,7 +4,7 @@
   --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;width:100%;overflow-x:hidden}
 body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:6rem}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--guarana);outline-offset:2px}
@@ -211,6 +211,32 @@ kbd{border:1px solid var(--ink);border-radius:.3rem;padding:0 .35rem;font-family
   .filtros strong{font-size:1.05rem;margin:0 0 .2rem}
   .filtros .chip{padding:.3rem .65rem;font-size:.85rem}
   .ferramentas{padding-bottom:2.5rem}
+}
+/* iPhone and narrow-screen layout: keep every section inside the viewport. */
+@media (max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  .topo,.layout,.rodape{width:100%;max-width:100%}
+  .layout{display:block;padding-inline:1rem}
+  .layout>div,.ferramentas,main,.secao{min-width:0;max-width:100%}
+  .ferramentas{overflow:visible}
+  .filtros{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;width:100%;min-width:0}
+  .filtros strong{flex:0 0 100%;width:auto}
+  .filtros .chip{flex:0 1 auto;white-space:nowrap}
+  .busca{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%;min-width:0;gap:.5rem}
+  .busca label{grid-column:1/-1;width:auto}
+  .busca input{grid-column:1/-1;min-width:0;width:100%;max-width:100%}
+  .busca button{grid-column:1;justify-self:start;max-width:100%}
+  .contagem{overflow-wrap:anywhere}
+  .indice{max-width:100%;min-width:0}
+  .secao{grid-template-columns:minmax(0,1fr);width:100%}
+  .prato{min-width:0;width:100%}
+  #barra{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 2rem);white-space:nowrap}
+  #barraQtd{overflow:hidden;text-overflow:ellipsis}
+}
+@media (max-width:380px){
+  .layout{padding-inline:.75rem}
+  .filtros .chip{font-size:.8rem;padding:.3rem .5rem}
+  #barra{width:calc(100vw - 1.5rem);max-width:none;justify-content:space-between}
 }
 
 /* Painel do pedido */
