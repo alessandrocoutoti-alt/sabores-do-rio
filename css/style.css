@@ -5,7 +5,7 @@
 }
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:5.5rem}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:6rem}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--guarana);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -179,6 +179,15 @@ kbd{border:1px solid var(--ink);border-radius:.3rem;padding:0 .35rem;font-family
 @media (max-width:420px){.prato{grid-template-columns:1fr auto}.foto{width:100%;height:auto}}
 @media (max-width:600px){
   .topo{padding:2.25rem 1rem 5rem}
+  body{padding-bottom:calc(6.5rem + env(safe-area-inset-bottom))}
+  .topo-in{min-width:0}
+  .topo-in>div,.voz{min-width:0}
+  .voz-linha{align-items:flex-start}
+  .voz-linha>div{min-width:0}
+  #fala{overflow-wrap:anywhere}
+  .digitar{align-items:stretch}
+  .digitar input{font-size:1rem}
+  .digitar button{min-height:2.8rem}
   .layout{padding:1rem;gap:1rem}
   .voz{padding:.9rem}
   .exemplos button{min-height:2.5rem}
@@ -191,6 +200,7 @@ kbd{border:1px solid var(--ink);border-radius:.3rem;padding:0 .35rem;font-family
   #pedido{padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom))}
   #pedido h2{top:-1rem}
   #barra{bottom:calc(.75rem + env(safe-area-inset-bottom));min-height:3rem}
+  .rodape{padding-bottom:calc(7rem + env(safe-area-inset-bottom))}
 }
 
 /* Painel do pedido */
