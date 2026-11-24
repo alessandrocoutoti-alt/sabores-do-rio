@@ -47,15 +47,14 @@ $('#limpar').onclick = limparPedido;
 function limparPedido() { carrinho.clear(); desenhar(); dizer('Pedido limpo.'); }
 function finalizar() {
   if (!carrinho.size) return dizer('Seu pedido está vazio.');
-  // Este projeto é uma demonstração local: não há integração com uma cozinha.
   const num = Math.floor(100 + Math.random() * 900);
   const mesa = $('#mesa').value.trim(), obs = $('#obs').value.trim();
-  $('#okNum').textContent = `Resumo nº ${num}${mesa ? ' · Mesa ' + mesa : ''}. Total: ${$('#total').textContent}. Este pedido é apenas uma demonstração e não foi enviado ao restaurante.`;
-  $('#okLista').replaceChildren();
-  [...carrinho].forEach(([id, q]) => { const li = document.createElement('li'); li.textContent = `${q}× ${porId[id].nome}`; $('#okLista').append(li); });
-  if (obs) { const li = document.createElement('li'); const em = document.createElement('i'); em.textContent = `Obs.: ${obs}`; li.append(em); $('#okLista').append(li); }
+  $('#okNum').textContent = `Pedido nº ${num}${mesa ? ' · Mesa ' + mesa : ''} enviado para a cozinha. Total: ${$('#total').textContent}`;
+  $('#okLista').innerHTML = [...carrinho].map(([id, q]) => `<li>${q}× ${porId[id].nome}</li>`).join('')
+    + (obs ? `<li><i>Obs.: ${obs.replace(/</g, '&lt;')}</i></li>` : '');
   $('#ok').showModal(); $('#pedido').classList.remove('aberto');
-  dizer(`Resumo ${num} gerado. Este pedido é apenas uma demonstração.`);
+  dizer(`Pedido ${num} enviado para a cozinha.`);
+  carrinho.clear(); $('#obs').value = ''; desenhar();
 }
 $('#finalizar').onclick = finalizar;
 $('#okFechar').onclick = () => $('#ok').close();
@@ -65,7 +64,7 @@ $('#fechar').onclick = () => $('#pedido').classList.remove('aberto');
 /* ---------- Filtros de alérgenos ---------- */
 let termo = '';
 function aplicarFiltros() {
-  document.querySelectorAll('.chip[data-al]').forEach(c => c.setAttribute('aria-pressed', excluidos.has(c.dataset.al)));
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', excluidos.has(c.dataset.al)));
   let visiveis = 0;
   pratos.forEach(p => { const oculta = p.alergenos.some(a => excluidos.has(a)) || (termo && !semAcento(p.el.textContent).includes(termo)); p.el.hidden = oculta; if (!oculta) visiveis++; });
   document.querySelectorAll('.secao').forEach(s => s.hidden = !s.querySelector('.prato:not([hidden])'));
@@ -123,7 +122,7 @@ function comando(texto) {
     mudar(prato.id, -Math.min(qtd, carrinho.get(prato.id)));
     return dizer(`Removi ${prato.nome}.`);
   }
-  if (prato && /\b(adicionar|adiciona|quero|pedir|pedindo|incluir|inclui)\b/.test(t)) {
+  if (prato) {
     if (prato.alergenos.some(a => excluidos.has(a))) return dizer(`Atenção: ${prato.nome} contém um alérgeno que você marcou. Não adicionei.`);
     mudar(prato.id, qtd);
     const alerta = prato.alergenos.length ? ` Contém ${prato.alergenos.join(', ')}.` : '';
@@ -131,7 +130,6 @@ function comando(texto) {
   }
   const sem = [...t.matchAll(/sem (gluten|lactose|ovo|peixe|castanhas?|amendoim|crustaceos?)/g)].map(x => normAl(x[1]));
   if (sem.length) { sem.forEach(a => excluidos.add(a)); aplicarFiltros(); return dizer(`Escondi os pratos com ${sem.join(' e ')}.`); }
-  if (prato) return dizer(`Encontrei ${prato.nome}. Para incluir no pedido, diga “adicionar ${prato.nome}”.`);
   dizer('Não entendi. Tente “quero duas moquecas” ou “sem glúten”.');
 }
 
@@ -150,7 +148,7 @@ if (!SR) {
     let txt = ''; for (const r of e.results) { txt += r[0].transcript; if (r.isFinal) final = txt; }
     $('#fala').textContent = `“${txt}”`;
   };
-  rec.onerror = e => { $('#fala').textContent = e.error === 'not-allowed' ? 'Permita o uso do microfone no navegador.' : 'Não consegui ouvir. Tente de novo.'; $('#retorno').textContent = 'Se preferir, digite seu comando no campo abaixo.'; };
+  rec.onerror = e => { $('#fala').textContent = e.error === 'not-allowed' ? 'Permita o uso do microfone no navegador.' : 'Não consegui ouvir. Tente de novo.'; };
   rec.onend = () => { mic.classList.remove('ouvindo'); if (final) comando(final); };
 }
 $('#formTexto').addEventListener('submit', e => { e.preventDefault(); const v = $('#txt').value.trim(); if (v) { comando(v); $('#txt').value = ''; } });
@@ -213,6 +211,49 @@ document.addEventListener('keydown', e => {
   else if (k === 'p') $('#barra').click();
   else if (k === 'c') $('#tema').click();
   else if (k === 'd') $('#escuro').click();
+});
+
+
+/* ---------- Camada semântica: converte os Microdados do HTML em JSON-LD ---------- */
+function lerItem(escopo) {
+  const o = {}, tipo = escopo.getAttribute('itemtype');
+  if (tipo) o['@type'] = tipo.replace('https://schema.org/', '');
+  (function visitar(no) {
+    for (const f of no.children) {
+      const prop = f.getAttribute('itemprop'), escopoFilho = f.hasAttribute('itemscope');
+      if (prop) {
+        let v;
+        if (escopoFilho) v = lerItem(f);
+        else if (f.tagName === 'META') v = f.getAttribute('content');
+        else if (f.tagName === 'LINK') v = f.getAttribute('href');
+        else v = f.getAttribute('content') ?? f.textContent.trim();
+        prop.split(/\s+/).forEach(n => {
+          if (o[n] === undefined) o[n] = v;
+          else if (Array.isArray(o[n])) o[n].push(v);
+          else o[n] = [o[n], v];
+        });
+      }
+      if (!escopoFilho) visitar(f);
+    }
+  })(escopo);
+  return o;
+}
+function gerarJsonLd() {
+  const raiz = document.querySelector('[itemscope][itemtype$="/Restaurant"]');
+  return raiz ? { '@context': 'https://schema.org', ...lerItem(raiz) } : null;
+}
+const dlgSem = $('#dlgSemantica');
+$('#verSemantica').addEventListener('click', () => {
+  const dados = gerarJsonLd();
+  $('#jsonld').textContent = dados ? JSON.stringify(dados, null, 2) : 'Nenhum Restaurant encontrado nos Microdados.';
+  $('#resumoSem').textContent = dados ? `Microdados do HTML convertidos para JSON-LD: ${pratos.length} pratos (MenuItem) em ${document.querySelectorAll('.secao').length} seções (MenuSection).` : '';
+  dlgSem.showModal();
+});
+$('#fecharSem').addEventListener('click', () => dlgSem.close());
+$('#copiarSem').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#jsonld').textContent); $('#copiarSem').textContent = 'Copiado!'; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($('#jsonld')); getSelection().removeAllRanges(); getSelection().addRange(r); $('#copiarSem').textContent = 'Selecionado: use Ctrl+C'; }
+  setTimeout(() => { $('#copiarSem').textContent = 'Copiar JSON-LD'; }, 2000);
 });
 
 validarDados();

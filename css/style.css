@@ -4,8 +4,8 @@
   --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth;width:100%;overflow-x:hidden}
-body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:6rem}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:5.5rem}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--guarana);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -31,7 +31,6 @@ button,input{font:inherit;color:inherit}
 .digitar input{flex:1;min-width:0;border:0;border-radius:.5rem;padding:.6rem .8rem;background:var(--surface);color:var(--ink)}
 .digitar button{border:0;border-radius:.5rem;background:#fff;color:var(--acai);font-weight:700;padding:0 1rem;cursor:pointer}
 .opt{font-size:.85rem;color:#d9c9e6;display:flex;gap:.4rem;align-items:center}
-.ajuda-comando{font-size:.82rem;color:#eadff3;line-height:1.4}
 
 /* Filtros */
 .layout{max-width:1120px;margin:auto;padding:1.5rem 1.25rem;display:grid;gap:2rem}
@@ -40,8 +39,6 @@ button,input{font:inherit;color:inherit}
 .chip{border:1.5px solid var(--ink);background:transparent;border-radius:.5rem;padding:.35rem .8rem;cursor:pointer;font-weight:600;font-size:.9rem}
 .chip[aria-pressed=true]{background:var(--ink);color:var(--on-ink)}
 .chip[aria-pressed=true]::before{content:"✕ "}
-.filtros{padding:0;background:transparent;border:0;border-radius:0}
-.filtros strong{width:100%;margin-bottom:.2rem}
 
 /* Cardápio */
 .secao{margin-top:2rem}
@@ -123,8 +120,6 @@ html{scroll-behavior:smooth;scroll-padding-top:4rem}
 .indice{display:flex;gap:.5rem;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--paper);padding:.5rem 0;border-bottom:1px solid var(--line)}
 .indice a{padding:.3rem .8rem;border-radius:999px;border:1.5px solid var(--ink);color:var(--ink);text-decoration:none;font-weight:600;font-size:.9rem}
 .indice a[aria-current]{background:var(--ink);color:var(--on-ink)}
-.prato[hidden],.secao[hidden]{display:none!important}
-.contagem{min-height:1.5em}
 .aviso{background:var(--alerta);color:var(--alerta-ink);padding:.6rem .9rem;border-radius:.5rem;margin:.5rem 0;font-weight:600}
 .atalhos{margin:.5rem 0;font-size:.9rem}
 .atalhos summary{cursor:pointer;font-weight:600}
@@ -170,74 +165,12 @@ kbd{border:1px solid var(--ink);border-radius:.3rem;padding:0 .35rem;font-family
 .prato>:not(.foto){margin-inline:1rem}
 .foto{grid-column:1/-1;grid-row:auto;width:100%;height:auto;aspect-ratio:4/3;border-radius:0;object-fit:cover;object-position:center 60%;transition:transform .5s}
 .prato:hover .foto{transform:scale(1.04)}
-.prato:focus-within{outline:3px solid var(--guarana);outline-offset:3px}
 .prato h3{margin-top:.7rem;font-family:var(--serif);font-size:1.2rem;font-weight:600;line-height:1.2}
 .preco{margin-top:.7rem;align-self:start;font-family:var(--serif);font-weight:800;font-size:1.15rem;color:var(--preco)}
 .desc{grid-column:1/-1;max-width:none}
 .etiquetas{grid-column:1/-1}
 .add{grid-column:1/-1;justify-self:stretch;margin-top:.6rem;padding:.65rem 1rem;border-radius:.7rem;text-align:center}
 @media (max-width:420px){.prato{grid-template-columns:1fr auto}.foto{width:100%;height:auto}}
-@media (max-width:600px){
-  .topo{padding:2.25rem 1rem 5rem}
-  body{padding-bottom:calc(6.5rem + env(safe-area-inset-bottom))}
-  .topo-in{min-width:0}
-  .topo-in>div,.voz{min-width:0}
-  .voz-linha{align-items:flex-start}
-  .voz-linha>div{min-width:0}
-  #fala{overflow-wrap:anywhere}
-  .digitar{align-items:stretch}
-  .digitar input{font-size:1rem}
-  .digitar button{min-height:2.8rem}
-  .layout{padding:1rem;gap:1rem}
-  .voz{padding:.9rem}
-  .exemplos button{min-height:2.5rem}
-  .busca{align-items:stretch}
-  .busca label{width:100%}
-  .busca input{min-width:0;width:100%;flex-basis:100%}
-  .busca button{min-height:2.7rem}
-  .indice{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
-  .indice a{white-space:nowrap;min-height:2.5rem;display:flex;align-items:center}
-  #pedido{padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom))}
-  #pedido h2{top:-1rem}
-  #barra{bottom:calc(.75rem + env(safe-area-inset-bottom));min-height:3rem}
-  .rodape{padding-bottom:calc(7rem + env(safe-area-inset-bottom))}
-}
-@media (max-width:600px){
-  /* Keep the order shortcut out of the way while the customer browses. */
-  body{padding-bottom:1rem}
-  #barra{left:auto;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom));width:auto;min-width:0;gap:.75rem;padding:.7rem .9rem;border-radius:999px;font-size:.82rem;box-shadow:0 4px 16px rgba(0,0,0,.24)}
-  #barraTotal{white-space:nowrap}
-  .filtros{gap:.45rem}
-  .filtros strong{font-size:1.05rem;margin:0 0 .2rem}
-  .filtros .chip{padding:.3rem .65rem;font-size:.85rem}
-  .ferramentas{padding-bottom:2.5rem}
-}
-/* iPhone and narrow-screen layout: keep every section inside the viewport. */
-@media (max-width:700px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden}
-  .topo,.layout,.rodape{width:100%;max-width:100%}
-  .layout{display:block;padding-inline:1rem}
-  .layout>div,.ferramentas,main,.secao{min-width:0;max-width:100%}
-  .ferramentas{overflow:visible}
-  .filtros{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;width:100%;min-width:0}
-  .filtros strong{flex:0 0 100%;width:auto}
-  .filtros .chip{flex:0 1 auto;white-space:nowrap}
-  .busca{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%;min-width:0;gap:.5rem}
-  .busca label{grid-column:1/-1;width:auto}
-  .busca input{grid-column:1/-1;min-width:0;width:100%;max-width:100%}
-  .busca button{grid-column:1;justify-self:start;max-width:100%}
-  .contagem{overflow-wrap:anywhere}
-  .indice{max-width:100%;min-width:0}
-  .secao{grid-template-columns:minmax(0,1fr);width:100%}
-  .prato{min-width:0;width:100%}
-  #barra{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 2rem);white-space:nowrap}
-  #barraQtd{overflow:hidden;text-overflow:ellipsis}
-}
-@media (max-width:380px){
-  .layout{padding-inline:.75rem}
-  .filtros .chip{font-size:.8rem;padding:.3rem .5rem}
-  #barra{width:calc(100vw - 1.5rem);max-width:none;justify-content:space-between}
-}
 
 /* Painel do pedido */
 #pedido h2{font-family:var(--serif);font-weight:800}
@@ -247,3 +180,11 @@ kbd{border:1px solid var(--ink);border-radius:.3rem;padding:0 .35rem;font-family
 [data-tema="contraste"] .topo{background:linear-gradient(rgba(0,0,0,.92),rgba(0,0,0,.92)),url("../img/capa.jpg") center/cover no-repeat;background-color:#000}
 [data-tema="contraste"] #mic{border:4px solid #fff;background:#a00020}
 [data-tema="contraste"] #mic:disabled{background:#333}
+
+/* ---------- Painel de dados semânticos ---------- */
+.sem{margin:.5rem 0}
+#dlgSemantica{max-width:min(94vw,56rem);width:100%}
+.codigo{max-height:55vh;overflow:auto;background:#17111d;color:#efe9f5;padding:1rem;border-radius:.6rem;font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre;margin:.75rem 0;border:1px solid var(--line)}
+.sem-acoes{display:flex;gap:.5rem;flex-wrap:wrap}
+.sem-dica{font-size:.85rem;color:var(--muted);margin-top:.75rem}
+[data-tema="contraste"] .codigo{background:#000;color:#fff;border:2px solid #fff}
